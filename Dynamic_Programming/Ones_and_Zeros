@@ -1,0 +1,46 @@
+// Leetcode 474
+class Solution
+{
+public:
+    int f(int index, int m, int n, unordered_map<int, pair<int, int>> &mp, int size,
+          vector<vector<vector<int>>> &dp)
+    {
+        if (index == size - 1)
+        {
+            int lastzeros = mp[index].first;
+            int lastones = mp[index].second;
+            if (lastzeros <= m && lastones <= n)
+                return 1;
+            else
+                return 0;
+        }
+
+        if (dp[index][m][n] != -1)
+            return dp[index][m][n];
+        int pick = -1e9;
+        if (mp[index].first <= m && mp[index].second <= n)
+        {
+            pick = 1 + f(index + 1, m - mp[index].first, n - mp[index].second, mp, size, dp);
+        }
+        int nonpick = 0 + f(index + 1, m, n, mp, size, dp);
+        return dp[index][m][n] = max(pick, nonpick);
+    }
+    int findMaxForm(vector<string> &strs, int m, int n)
+    {
+        int size = strs.size();
+        unordered_map<int, pair<int, int>> mp;
+        // index -> zeros and ones
+        for (int i = 0; i < strs.size(); i++)
+        {
+            for (int j = 0; j < strs[i].size(); j++)
+            {
+                if (strs[i][j] == '0')
+                    mp[i].first++;
+                else
+                    mp[i].second++;
+            }
+        }
+        vector<vector<vector<int>>> dp(size, vector<vector<int>>(m + 1, vector<int>(n + 1, -1)));
+        return f(0, m, n, mp, size, dp);
+    }
+};
